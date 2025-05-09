@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caça Palavras Anfibios</title>
+</head>
+<body>
+    <div class="container">
+        <h1>ANFIBIOS</h1>
+        <div id="word-list"></div>
+        <div id="word-grid"></div>
+    </div>
+    <style>
+       body {
+    font-family: Arial, sans-serif;
+    background-color: #1a5302;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    padding: 10px;
+    user-select: none;
+}
+
+.container {
+    text-align: center;
+    background-color: #68b26d;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(242, 150, 150, 0.1);
+    border-radius: 10px;
+    /* height: 100vh; */
+    
+}
+
+h1 {
+    color: #043503;
+    /*margin: 30px;*/
+}
+
+#word-list {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+#word-list ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+#word-list ul li {
+    display: inline-block;
+    margin-right: 20px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+#word-grid {
+    display: grid;
+    grid-template-columns: repeat(25, 1fr);  /* Aumenta o número de colunas para 15 */
+    grid-gap: 5px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+#word-grid span {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    background-color: #cdffc4;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#word-grid span:hover {
+    background-color: #ffffff;
+}
+
+.found {
+    background-color: #ffffff;
+    pointer-events: none;
+}
+
+.highlight {
+    background-color: #ffcc00; /* Cor para as letras enquanto o mouse está selecionando */
+}
+
+.error {
+    background-color: #fb7c7c; /* Cor para as letras quando a palavra está errada */
+}
+
+.selected {
+    background-color: #6fd8ac; /* Cor para as letras da palavra encontrada */
+}
+
+.selected-word {
+    color: rgb(3, 103, 1); /* Cor para palavras encontradas na lista */
+}
+    </style>
+    <script>
+        const words = ["SAPO", "RÃ", "PERERECA", "SALAMANTRA", "TRITÕES", "CECÍLIAS"];
+const gridSize = 15;  // Tamanho da grade 15x15
+const grid = [];
+const foundWords = [];
+let selectedCells = [];
+let isSelecting = false;
+
+// Função para gerar a grade de caça-palavras
+function generateGrid() {
+    // Inicializa a grade vazia
+    for (let i = 0; i < gridSize; i++) {
+        grid[i] = [];
+        for (let j = 0; j < gridSize; j++) {
+            grid[i][j] = '';
+        }
+    }
+
+    // Função para colocar palavras na horizontal
+    function placeWord(word) {
+        const wordLength = word.length;
+        let row, col;
+
+        // Tentamos colocar a palavra de forma horizontal em uma posição aleatória
+        let placed = false;
+        while (!placed) {
+            row = Math.floor(Math.random() * gridSize); // Encontrar uma linha para a palavra
+            col = Math.floor(Math.random() * (gridSize - wordLength)); // Encontrar uma coluna para a palavra
+
+            // Verifica se há espaço suficiente na horizontal para colocar a palavra
+            let canPlace = true;
+            for (let i = 0; i < wordLength; i++) {
+                if (grid[row][col + i] !== '') {
+                    canPlace = false; // Se já houver uma letra na posição, não pode colocar
+                    break;
+                }
+            }
+
+            // Se há espaço, coloca a palavra
+            if (canPlace) {
+                for (let i = 0; i < wordLength; i++) {
+                    grid[row][col + i] = word[i];
+                }
+                placed = true; // Palavra colocada com sucesso
+            }
+        }
+    }
+
+    // Coloca as palavras na grade
+    words.forEach(placeWord);
+
+    // Preenche as células restantes com letras aleatórias
+    const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    for (let i = 0; i < gridSize; i++) {
+        for (let j = 0; j < gridSize; j++) {
+            if (grid[i][j] === '') {
+                grid[i][j] = alphabet[Math.floor(Math.random() * alphabet.length)];
+            }
+        }
+    }
+}
+
+// Função para criar o layout da grade na tela
+function displayGrid() {
+    const gridContainer = document.getElementById('word-grid');
+    gridContainer.innerHTML = '';
+
+    for (let i = 0; i < gridSize; i++) {
+        for (let j = 0; j < gridSize; j++) {
+            const cell = document.createElement('span');
+            cell.textContent = grid[i][j];
+            cell.dataset.row = i;
+            cell.dataset.col = j;
+            cell.addEventListener('mousedown', startSelecting);
+            cell.addEventListener('mouseenter', continueSelecting);
+            cell.addEventListener('mouseup', stopSelecting);
+            gridContainer.appendChild(cell);
+        }
+    }
+}
+
+// Função para criar a lista de palavras
+function displayWordList() {
+    const wordListContainer = document.getElementById('word-list');
+    const ul = document.createElement('ul');
+    words.forEach(word => {
+        const li = document.createElement('li');
+        li.textContent = word;
+        ul.appendChild(li);
+    });
+    wordListContainer.appendChild(ul);
+}
+
+// Função para marcar a palavra como "encontrada" ou "errada"
+function markWord() {
+    const word = selectedCells.map(cell => cell.textContent).join('');
+    if (words.includes(word)) {
+        selectedCells.forEach(cell => {
+            cell.classList.add('found');
+            cell.classList.add('selected'); // Marca permanentemente a célula da palavra
+        });
+        updateFoundWords(word);
+    } else {
+        selectedCells.forEach(cell => cell.classList.add('error'));
+        setTimeout(() => {
+            selectedCells.forEach(cell => cell.classList.remove('highlight', 'error'));
+        }, 500);  // Remove a marcação de erro após um pequeno delay
+    }
+}
+
+// Função para atualizar a lista de palavras encontradas
+function updateFoundWords(word) {
+    const wordListContainer = document.getElementById('word-list');
+    const listItems = wordListContainer.getElementsByTagName('li');
+    for (let i = 0; i < listItems.length; i++) {
+        if (listItems[i].textContent === word) {
+            listItems[i].classList.add('selected-word');  // Marca a palavra encontrada na lista
+        }
+    }
+}
+
+// Função para começar a selecionar as células
+let currentCell = null;
+
+function startSelecting(event) {
+    isSelecting = true;
+    selectedCells = [];
+    currentCell = event.target;
+    selectedCells.push(currentCell);
+    currentCell.classList.add('highlight');
+}
+
+// Função para continuar a seleção de células
+function continueSelecting(event) {
+    if (!isSelecting) return;
+    const cell = event.target;
+    if (!selectedCells.includes(cell) && cell !== currentCell) {
+        selectedCells.push(cell);
+        cell.classList.add('highlight');
+    }
+}
+
+// Função para parar a seleção de células
+function stopSelecting() {
+    isSelecting = false;
+    markWord();
+}
+
+// Inicia o jogo
+function startGame() {
+    generateGrid();
+    displayGrid();
+    displayWordList();
+}
+
+startGame();
+    </script>
+</body>
+</html>
