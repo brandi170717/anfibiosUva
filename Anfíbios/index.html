@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="inicio.css">
+    <title> Anfibios</title>
+</head>
+<body>
+    <header>
+        <h1>Anfibios</h1>
+    </header>
+
+        <main>
+            <div class="container">
+                <div class="text">
+                    <p>
+                        Os anfíbios são animais vertebrados que vivem parte da vida na água e parte em terra. Eles incluem sapos, rãs, salamandras e cecílias. Possuem pele fina e úmida, através da qual respiram, além de pulmões. Os anfíbios passam por uma metamorfose, começando como larvas aquáticas com brânquias e se transformando em adultos terrestres com pulmões. Eles dependem de ambientes úmidos para reprodução, pois seus ovos não têm casca protetora. Sensíveis a mudanças ambientais, os anfíbios são importantes indicadores da saúde dos ecossistemas. 🐸🌿
+                    </p>
+                    <div class="btn" id="1" onclick="redirecionar('selecionar.html')" >Joque já!</div>
+                    <!-- <button  class="btn" onclick="('selecionar.html')" >Jogue já</button> -->
+                </div>
+                <div class="image">
+                    <img src="./sapo na arvore.avif" alt="Robô Mali">
+                </div>
+            </div>
+        </main>
+
+        <script>
+               function redirecionar(url) {
+            window.location.href = url;
+        }
+        </script>
+    <style>
+
+        *{
+            @import url('https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Courgette&family=Gravitas+One&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+        }
+        body {
+            font-family: "Gravitas One", serif;
+            margin: 0;
+            padding: 0;
+            background-color: #085726;
+        }
+        header {
+            background-color: #085726;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            display: flex;
+            justify-content:row;
+            
+        } 
+        .container {
+            display: flex;
+            justify-content: center;
+            justify-content: space-between;
+            align-items: center;
+            padding: 40px;
+            background-color: #55a035;
+            }
+        .text {
+            max-width: 50%;
+            font-size: 18px;
+            color: #ffffff;
+        }
+        .btn {
+            display: inline-block;
+            background-color: #0a4111;
+            color: rgb(255, 255, 255);
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            color: white;
+        }
+        .btn:hover {
+             background-color: #00460c;
+        }
+        .image img {
+            width: 400px;
+            border-radius: 50%;
+            border: 5px solid #3e7342;
+        }
+        footer {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background-color: #3e7342;
+            color: white;
+            font-size: 14px;
+        }
+        .social img {
+            width: 20px;
+            margin-right: 10px;
+        }
+
+    </style>
+
+</body>
+</html>
+
