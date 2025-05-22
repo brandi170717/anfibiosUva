@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <title>Jogo da Memória - Anfíbios 🐸</title>
+</head>
+
+<body>
+  <!-- Botão voltar -->
+  <div class="voltar" onclick="redirecionar('selecionar.html')">
+    <i class="bi bi-arrow-left-square"></i>
+  </div>
+  <h1>Jogo da Memória - Anfíbios 🐸</h1>
+
+  <div class="placar">
+    ✔️ Acertos: <span id="acertos">0</span>
+    ❌ Erros: <span id="erros">0</span>
+  </div>
+
+  <div class="tabuleiro" id="tabuleiro"></div>
+
+  <div class="mensagem" id="mensagemFinal">🎉 Parabéns! Você encontrou todos os pares!</div>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #1b5e20;
+      color: white;
+      text-align: center;
+      padding: 20px;
+    }
+
+     .voltar {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      font-size: 32px;
+      cursor: pointer;
+      color: #ffffff;
+      z-index: 100;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+    }
+
+    .placar {
+      margin-bottom: 20px;
+      font-size: 20px;
+    }
+
+    .placar span {
+      margin: 0 10px;
+    }
+
+    .tabuleiro {
+      display: grid;
+      grid-template-columns: repeat(4, 120px);
+      gap: 15px;
+      justify-content: center;
+      margin: 0 auto;
+    }
+
+    .carta {
+      width: 120px;
+      height: 120px;
+      perspective: 1000px;
+      cursor: pointer;
+    }
+
+    .conteudo {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.6s;
+    }
+
+    .virada .conteudo {
+      transform: rotateY(180deg);
+    }
+
+    .frente,
+    .verso {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 10px;
+    }
+
+    .frente {
+      background: #66bb6a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+    }
+
+    .verso {
+      background-color: #fff;
+      transform: rotateY(180deg);
+    }
+
+    .verso img {
+      width: 100%;
+      height: 100%;
+      border-radius: 10px;
+      object-fit: cover;
+    }
+
+    .mensagem {
+      margin-top: 20px;
+      font-size: 24px;
+      display: none;
+    }
+  </style>
+
+  <script>
+     function redirecionar(url) {
+      window.location.href = url;
+    }
+
+    const imagens = [
+      'sapo1.png',
+      'sapo2.png',
+      'sapo3.png',
+      'salamandra.png',
+      'perereca.png',
+      'rã.png'
+    ];
+
+    const pares = [...imagens, ...imagens]; // 6 pares = 12 cartas
+    const embaralhadas = pares.sort(() => 0.5 - Math.random());
+
+    const tabuleiro = document.getElementById('tabuleiro');
+    const mensagemFinal = document.getElementById('mensagemFinal');
+    const acertosSpan = document.getElementById('acertos');
+    const errosSpan = document.getElementById('erros');
+
+    let primeiraCarta = null;
+    let segundaCarta = null;
+    let bloqueado = false;
+    let paresEncontrados = 0;
+    let acertos = 0;
+    let erros = 0;
+
+    embaralhadas.forEach((imgSrc) => {
+      const carta = document.createElement('div');
+      carta.className = 'carta';
+      carta.dataset.imagem = imgSrc;
+      carta.innerHTML = `
+        <div class="conteudo">
+          <div class="frente">🐸</div>
+          <div class="verso"><img src="${imgSrc}" alt="Anfíbio"></div>
+        </div>
+      `;
+      carta.addEventListener('click', virarCarta);
+      tabuleiro.appendChild(carta);
+    });
+
+    function virarCarta() {
+      if (bloqueado || this.classList.contains('virada')) return;
+
+      this.classList.add('virada');
+
+      if (!primeiraCarta) {
+        primeiraCarta = this;
+        return;
+      }
+
+      segundaCarta = this;
+      bloqueado = true;
+
+      const img1 = primeiraCarta.dataset.imagem;
+      const img2 = segundaCarta.dataset.imagem;
+
+      if (img1 === img2) {
+        acertos++;
+        paresEncontrados++;
+        atualizarPlacar();
+
+        primeiraCarta = null;
+        segundaCarta = null;
+        bloqueado = false;
+
+        if (paresEncontrados === imagens.length) {
+          mensagemFinal.style.display = 'block';
+        }
+      } else {
+        erros++;
+        atualizarPlacar();
+
+        setTimeout(() => {
+          primeiraCarta.classList.remove('virada');
+          segundaCarta.classList.remove('virada');
+          primeiraCarta = null;
+          segundaCarta = null;
+          bloqueado = false;
+        }, 1000);
+      }
+    }
+
+    function atualizarPlacar() {
+      acertosSpan.textContent = acertos;
+      errosSpan.textContent = erros;
+    }
+  </script>
+
+</body>
+
+</html>

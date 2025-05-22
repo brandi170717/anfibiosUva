@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <title>Quiz: Anfíbios</title>
+</head>
+
+<body>
+    <!-- Botão voltar -->
+  <div class="voltar" onclick="redirecionar('selecionar.html')">
+    <i class="bi bi-arrow-left-square"></i>
+  </div>
+
+  <div class="quiz-container">
+    <h1>Quiz: Conhecimentos sobre Anfíbios 🐸</h1>
+    <div id="numero-questao"></div>
+    <div class="pergunta-box" id="pergunta"></div>
+
+    <ul id="alternativas" class="respostas-box">
+      <li><button class="alternativa" data-opcao="0" id="textoA"></button></li>
+      <li><button class="alternativa" data-opcao="1" id="textoB"></button></li>
+      <li><button class="alternativa" data-opcao="2" id="textoC"></button></li>
+      <li><button class="alternativa" data-opcao="3" id="textoD"></button></li>
+    </ul>
+
+    <div id="explicacao" class="explicacao-texto"></div>
+    <button id="proxima" class="btn-proxima" style="display: none;">Próxima pergunta</button>
+  </div>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #0f3d2c;
+      font-family: 'Arial', sans-serif;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    
+    .voltar {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      font-size: 32px;
+      cursor: pointer;
+      color: #ffffff;
+      z-index: 100;
+    }
+
+    .quiz-container {
+      background-color: #f1fdf4;
+      color: #000;
+      padding: 2rem;
+      border-radius: 15px;
+      width: 95%;
+      max-width: 700px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 1.5rem;
+      color: #1b5e20;
+    }
+
+    #numero-questao {
+      font-size: 1.3rem;
+      margin-bottom: 1rem;
+      font-weight: bold;
+    }
+
+    .pergunta-box {
+      background-color: #c8efcc;
+      padding: 1rem;
+      border-radius: 10px;
+      font-weight: bold;
+      font-size: 1.2rem;
+      margin-bottom: 1.5rem;
+      color: #0f3d2c;
+    }
+
+    .respostas-box {
+      list-style: none;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .alternativa {
+      background-color: #a5d6a7;
+      border: none;
+      color: #000;
+      font-size: 1rem;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background-color 0.3s;
+    }
+
+    .alternativa:hover {
+      background-color: #81c784;
+    }
+
+    .alternativa.correta {
+      background-color: #66bb6a;
+    }
+
+    .alternativa.errada {
+      background-color: #ef5350;
+    }
+
+    .explicacao-texto {
+      margin-top: 1rem;
+      font-size: 1rem;
+      color: #2e7d32;
+      min-height: 30px;
+    }
+
+    .btn-proxima {
+      margin-top: 1.5rem;
+      padding: 10px 20px;
+      font-size: 1rem;
+      background-color: #2e7d32;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .btn-proxima:hover {
+      background-color: #1b5e20;
+    }
+
+    #jogar-novamente {
+      margin-top: 1.5rem;
+      padding: 10px 20px;
+      font-size: 1rem;
+      background-color: #10ad90;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    #jogar-novamente:hover {
+      background-color: #0e8d74;
+    }
+  </style>
+  <script>
+    function redirecionar(url) {
+      window.location.href = url;
+    }
+    const perguntas = [
+      {
+        texto: "Qual destas características é exclusiva dos anfíbios?",
+        opcoes: [
+          "Possuem pele fina e permeável, usada para respiração.",
+          "Têm escamas que os protegem da perda de água.",
+          "São exclusivamente terrestres durante toda a vida.",
+          "Possuem penas para ajudar na locomoção."
+        ],
+        correta: 0,
+        explicacao: "Os anfíbios respiram também pela pele, que é fina e permeável — algo único entre os vertebrados."
+      },
+      {
+        texto: "Qual destes animais é um anfíbio?",
+        opcoes: ["Jacaré", "Sapo", "Pombo", "Tubarão"],
+        correta: 1,
+        explicacao: "O sapo é um anfíbio. Jacaré é réptil, pombo é ave, tubarão é peixe cartilaginoso."
+      },
+      {
+        texto: "Como ocorre a respiração da maioria dos anfíbios adultos?",
+        opcoes: [
+          "Apenas por brânquias.",
+          "Por pulmões e pela pele.",
+          "Apenas por traqueias.",
+          "Por penas especializadas."
+        ],
+        correta: 1,
+        explicacao: "Anfíbios adultos respiram tanto por pulmões quanto pela pele."
+      },
+      {
+        texto: "Durante o ciclo de vida, os anfíbios geralmente passam por:",
+        opcoes: [
+          "Metamorfose completa: de larva aquática a adulto terrestre.",
+          "Um estágio apenas terrestre.",
+          "Transformação direta sem mudanças.",
+          "Desenvolvimento no ovo até o adulto, sem larva."
+        ],
+        correta: 0,
+        explicacao: "Eles nascem como larvas aquáticas e passam por metamorfose até virar adultos terrestres."
+      },
+      {
+        texto: "Qual dos habitats abaixo é essencial para a reprodução de anfíbios?",
+        opcoes: [
+          "Ambientes áridos como desertos.",
+          "Água doce, como lagos e rios.",
+          "Ambientes marinhos profundos.",
+          "Regiões polares geladas."
+        ],
+        correta: 1,
+        explicacao: "A maioria dos anfíbios depende de água doce para reprodução e desenvolvimento das larvas."
+      },
+      {
+        texto: "Qual é uma ameaça comum aos anfíbios atualmente?",
+        opcoes: [
+          "Temperaturas estáveis.",
+          "Poluição e destruição de habitats.",
+          "Aumento de florestas.",
+          "Excesso de umidade nos ambientes."
+        ],
+        correta: 1,
+        explicacao: "A poluição e a perda de habitat são causas principais do declínio de populações de anfíbios."
+      },
+      {
+        texto: "O que significa a palavra 'anfíbio'?",
+        opcoes: [
+          "Respiração por brânquias.",
+          "Vida dupla (na água e na terra).",
+          "Animal com escamas.",
+          "Animal que voa."
+        ],
+        correta: 1,
+        explicacao: "A palavra vem do grego 'amphi' (duplo) e 'bios' (vida)."
+      },
+      {
+        texto: "Como é a pele dos anfíbios?",
+        opcoes: [
+          "Seca e coberta por pelos.",
+          "Grossa e com escamas.",
+          "Fina, úmida e sem escamas.",
+          "Coriácea e impermeável."
+        ],
+        correta: 2,
+        explicacao: "Sua pele é fina, úmida e sem escamas, essencial para a respiração cutânea."
+      },
+      {
+        texto: "Qual grupo de anfíbios inclui sapos e rãs?",
+        opcoes: [
+          "Caudados.",
+          "Ápodes.",
+          "Anuros.",
+          "Mamíferos."
+        ],
+        correta: 2,
+        explicacao: "Anuros são os anfíbios sem cauda, como sapos e rãs."
+      },
+      {
+        texto: "O que é a respiração cutânea?",
+        opcoes: [
+          "Respiração pela boca.",
+          "Troca gasosa pela pele.",
+          "Troca de calor pelo corpo.",
+          "Processo digestivo pela pele."
+        ],
+        correta: 1,
+        explicacao: "É a troca de gases (oxigênio e gás carbônico) feita pela pele."
+      },
+      {
+        texto: "O que os anfíbios usam para se defender?",
+        opcoes: [
+          "Unhas afiadas.",
+          "Cor e secreções tóxicas.",
+          "Chifres frontais.",
+          "Garras venenosas."
+        ],
+        correta: 1,
+        explicacao: "Muitos usam coloração de aviso e secreções venenosas na pele."
+      },
+      {
+        texto: "Como os girinos respiram?",
+        opcoes: [
+          "Por pulmões.",
+          "Por traqueias.",
+          "Por brânquias.",
+          "Por pelos sensoriais."
+        ],
+        correta: 2,
+        explicacao: "Girinos, estágio larval dos anuros, respiram por brânquias."
+      },
+      {
+        texto: "Qual classe científica representa os anfíbios?",
+        opcoes: [
+          "Aves.",
+          "Reptilia.",
+          "Amphibia.",
+          "Pisces."
+        ],
+        correta: 2,
+        explicacao: "Os anfíbios pertencem à classe Amphibia."
+      },
+      {
+        texto: "Anfíbios são indicadores ambientais porque:",
+        opcoes: [
+          "Vivem em cavernas profundas.",
+          "São muito resistentes à poluição.",
+          "São sensíveis às mudanças ambientais.",
+          "Se alimentam de lixo."
+        ],
+        correta: 2,
+        explicacao: "Sua pele sensível e ciclo de vida os tornam vulneráveis a alterações ambientais."
+      },
+      {
+        texto: "Por que os anfíbios estão em declínio no mundo?",
+        opcoes: [
+          "Aumento de predadores naturais.",
+          "Mudanças climáticas e fungos patogênicos.",
+          "Reprodução excessiva.",
+          "Crescimento descontrolado das florestas."
+        ],
+        correta: 1,
+        explicacao: "Fungos como o quitrídio e mudanças climáticas têm afetado muitas espécies."
+      }
+    ];
+
+    let indiceAtual = 0;
+    let pontuacao = 0;
+
+    const numeroQuestao = document.getElementById("numero-questao");
+    const pergunta = document.getElementById("pergunta");
+    const alternativas = document.querySelectorAll(".alternativa");
+    const explicacaoTexto = document.getElementById("explicacao");
+    const botaoProxima = document.getElementById("proxima");
+
+    function carregarPergunta() {
+      const q = perguntas[indiceAtual];
+      numeroQuestao.textContent = `Questão ${indiceAtual + 1} de ${perguntas.length}`;
+      pergunta.textContent = q.texto;
+      alternativas.forEach((botao, i) => {
+        botao.textContent = q.opcoes[i];
+        botao.classList.remove("correta", "errada");
+        botao.disabled = false;
+      });
+      explicacaoTexto.textContent = "";
+      botaoProxima.style.display = "none";
+    }
+
+    alternativas.forEach((botao, i) => {
+      botao.addEventListener("click", () => {
+        const q = perguntas[indiceAtual];
+        if (i === q.correta) {
+          botao.classList.add("correta");
+          explicacaoTexto.textContent = "✅ " + q.explicacao;
+          pontuacao++; // ✅ Incrementa a pontuação quando acerta
+        } else {
+          botao.classList.add("errada");
+          alternativas[q.correta].classList.add("correta");
+          explicacaoTexto.textContent = "❌ " + q.explicacao;
+        }
+        alternativas.forEach(btn => btn.disabled = true);
+        botaoProxima.style.display = "block";
+      });
+    });
+
+    botaoProxima.addEventListener("click", () => {
+      indiceAtual++;
+      if (indiceAtual < perguntas.length) {
+        carregarPergunta();
+      } else {
+        document.querySelector(".quiz-container").innerHTML = `
+      <h1>Parabéns! 🐸</h1>
+      <p>Você completou o quiz sobre anfíbios!</p>
+      <p>✨ Você acertou <strong>${pontuacao}</strong> de <strong>${perguntas.length}</strong> questões.</p>
+      <button id="jogar-novamente">🔄 Jogar novamente</button>
+    `;
+        document.getElementById("jogar-novamente").addEventListener("click", () => {
+          window.location.reload();
+        });
+      }
+    });
+
+    carregarPergunta();
+  </script>
+</body>
+
+</html>

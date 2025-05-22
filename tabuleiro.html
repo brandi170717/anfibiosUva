@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <meta charset="UTF-8">
+  <title>Tabuleiro dos Anfíbios 🐸</title>
+</head>
+
+<body>
+  <!-- Botão voltar -->
+  <div class="voltar" onclick="redirecionar('selecionar.html')">
+    <i class="bi bi-arrow-left-square"></i>
+  </div>
+  <h1>Tabuleiro dos Anfíbios</h1>
+
+  <div class="pontuacao">
+    ✅ Acertos: <span id="acertos">0</span> |
+    ❌ Erros: <span id="erros">0</span>
+  </div><br>
+
+  <div class="tabuleiro-container" id="tabuleiro">
+    <div class="sapo" id="sapo">🐸</div>
+  </div><br>
+
+  <div class="controles">
+    <button onclick="moverComPergunta()">🎲 Avançar</button>
+  </div>
+
+  <div id="modalPergunta">
+    <div class="caixa">
+      <p id="textoPergunta"></p>
+      <div id="opcoesContainer"></div>
+    </div>
+  </div>
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Comic Sans MS', sans-serif;
+      background-color: #2e7d32;
+      color: #fff;
+      text-align: center;
+    }
+
+    h1 {
+      margin: 10px 0;
+      font-size: 2em;
+      color: #ffeb3b;
+      text-shadow: 2px 2px 5px #000;
+    }
+
+    .pontuacao {
+      margin: 5px 0;
+      font-size: 18px;
+      color: #fff;
+    }
+
+    .voltar {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      font-size: 32px;
+      cursor: pointer;
+      color: #ffffff;
+      z-index: 100;
+    }
+
+
+
+    .tabuleiro-container {
+      position: relative;
+      width: 720px;
+      height: 450px;
+      margin: 10px auto;
+      background-image: url('https://i.imgur.com/HrbIh8C.png');
+      background-size: cover;
+      background-position: center;
+      border: 6px solid #2e7d32;
+      border-radius: 15px;
+      box-shadow: 0 0 20px #000;
+    }
+
+    .casa {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: rgba(10, 87, 22, 0.85);
+      color: #83af85;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      border: 2px solid #4caf50;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+      transition: transform 0.2s;
+      z-index: 1;
+    }
+
+    .casa:hover {
+      transform: scale(1.1);
+    }
+
+    .sapo {
+      font-size: 28px;
+      position: absolute;
+      transition: all 0.3s ease;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .controles {
+      margin-top: 10px;
+    }
+
+    .controles button {
+      padding: 10px 20px;
+      font-size: 18px;
+      background-color: #66bb6a;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 3px #388e3c;
+    }
+
+    .controles button:hover {
+      background-color: #4caf50;
+    }
+
+    /* Modal */
+    #modalPergunta {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.6);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #modalPergunta .caixa {
+      background: #fff;
+      color: #000;
+      padding: 20px;
+      border-radius: 12px;
+      max-width: 400px;
+      text-align: center;
+      box-shadow: 0 0 10px #000;
+    }
+
+    .opcao {
+      display: block;
+      margin: 10px auto;
+      padding: 10px 15px;
+      background: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      width: 80%;
+    }
+
+    .opcao:hover {
+      background-color: #388e3c;
+    }
+  </style>
+  <script>
+    function redirecionar(url) {
+      window.location.href = url;
+    }
+
+    let acertos = 0;
+    let erros = 0;
+
+    const sapo = document.getElementById('sapo');
+    const tabuleiro = document.getElementById('tabuleiro');
+    const modal = document.getElementById('modalPergunta');
+    const textoPergunta = document.getElementById('textoPergunta');
+    const opcoesContainer = document.getElementById('opcoesContainer');
+    const spanAcertos = document.getElementById('acertos');
+    const spanErros = document.getElementById('erros');
+
+    const casas = [
+      [500, 40], [450, 80], [400, 100], [350, 80], [300, 60], [250, 50],
+      [200, 80], [200, 150], [230, 200], [280, 220], [330, 240], [380, 220],
+      [430, 200], [480, 180], [500, 230], [520, 280], [470, 320], [420, 340],
+      [370, 360], [320, 340], [270, 330], [230, 360], [200, 400]
+    ];
+
+    const perguntas = [
+      { pergunta: "Qual é o nome da substância tóxica que alguns sapos liberam?", resposta: "Bufotoxina", opcoes: ["Clorofila", "Hemoglobina", "Bufotoxina", "Quitina"] },
+      { pergunta: "Os anfíbios respiram também pela...", resposta: "Pele", opcoes: ["Brânquias", "Escamas", "Pele", "Boca"] },
+      { pergunta: "Qual desses é um anfíbio?", resposta: "Salamandra", opcoes: ["Cobra", "Tubarão", "Salamandra", "Pinguim"] },
+      { pergunta: "Onde os anfíbios colocam ovos?", resposta: "Na água", opcoes: ["Na terra", "No ninho", "Na água", "Nas folhas"] },
+      { pergunta: "Como se chama o estágio inicial do sapo?", resposta: "Girino", opcoes: ["Larva", "Filhote", "Girino", "Sementinha"] },
+      { pergunta: "O que os girinos usam para respirar?", resposta: "Brânquias", opcoes: ["Pulmões", "Pele", "Brânquias", "Antenas"] },
+      { pergunta: "Anfíbios são de sangue...", resposta: "Frio", opcoes: ["Quente", "Frio", "Morno", "Gelado"] },
+      { pergunta: "O sapo é um animal...", resposta: "Vertebrado", opcoes: ["Invertebrado", "Vertebrado", "Molusco", "Crustáceo"] },
+      { pergunta: "Anfíbios vivem...", resposta: "Na água e na terra", opcoes: ["Apenas na água", "Na terra", "No ar", "Na água e na terra"] },
+      { pergunta: "A pele dos anfíbios é...", resposta: "Permeável", opcoes: ["Seca", "Permeável", "Peluda", "Com escamas"] },
+      { pergunta: "Qual órgão os sapos usam para pular com mais força?", resposta: "Pernas", opcoes: ["Pernas", "Braços", "Cauda", "Cabeça"] },
+      { pergunta: "Qual é a função da pele dos anfíbios?", resposta: "Respirar", opcoes: ["Nadar", "Comer", "Respirar", "Correr"] },
+      { pergunta: "Qual é o principal alimento dos sapos?", resposta: "Insetos", opcoes: ["Plantas", "Insetos", "Peixes", "Frutas"] },
+      { pergunta: "Qual o nome do processo em que o girino vira sapo?", resposta: "Metamorfose", opcoes: ["Eclosão", "Metamorfose", "Crescimento", "Transformação"] },
+      { pergunta: "Qual é o habitat natural da maioria dos anfíbios?", resposta: "Ambientes úmidos", opcoes: ["Desertos", "Ambientes úmidos", "Montanhas secas", "Cidades"] },
+      { pergunta: "Os sapos têm glândulas que produzem...", resposta: "Veneno", opcoes: ["Veneno", "Leite", "Água", "Mel"] },
+      { pergunta: "Qual desses animais NÃO é anfíbio?", resposta: "Jacaré", opcoes: ["Rã", "Sapo", "Salamandra", "Jacaré"] },
+      { pergunta: "Os anfíbios geralmente são ativos durante a...", resposta: "Noite", opcoes: ["Noite", "Manhã", "Tarde", "Dia todo"] },
+      { pergunta: "Quantas patas geralmente tem um sapo adulto?", resposta: "Quatro", opcoes: ["Duas", "Quatro", "Seis", "Oito"] },
+      { pergunta: "Qual é o nome do canto que os sapos fazem para se comunicar?", resposta: "Canto", opcoes: ["Latido", "Canto", "Rugido", "Assobio"] },
+      { pergunta: "Os anfíbios fazem parte do grupo dos...", resposta: "Vertebrados", opcoes: ["Invertebrados", "Vertebrados", "Moluscos", "Peixes"] },
+      { pergunta: "Qual é o principal perigo para os anfíbios na natureza?", resposta: "Poluição", opcoes: ["Poluição", "Fome", "Frio", "Luz do sol"] },
+      { pergunta: "Qual desses é um comportamento típico dos sapos?", resposta: "Pular", opcoes: ["Voar", "Pular", "Correr rápido", "Nadar"] },
+      { pergunta: "Anfíbios são importantes para o meio ambiente porque ajudam a controlar...", resposta: "Insetos", opcoes: ["Insetos", "Plantas", "Peixes", "Répteis"] }
+    ];
+
+    casas.forEach((coord, index) => {
+      const div = document.createElement('div');
+      div.className = 'casa';
+      div.style.left = `${coord[0]}px`;
+      div.style.top = `${coord[1]}px`;
+      div.textContent = index + 1;
+      tabuleiro.appendChild(div);
+    });
+
+    let posicaoAtual = 0;
+    let proximaPergunta = null;
+
+    function atualizarSapo() {
+      const [x, y] = casas[posicaoAtual];
+      sapo.style.left = `${x}px`;
+      sapo.style.top = `${y}px`;
+    }
+
+    function atualizarPontuacao() {
+      spanAcertos.textContent = acertos;
+      spanErros.textContent = erros;
+    }
+
+    function moverComPergunta() {
+      const novaPosicao = posicaoAtual + 1;
+
+      if (novaPosicao < casas.length) {
+        const perguntaObj = perguntas[novaPosicao - 1] || {
+          pergunta: "Qual é a cor do sapo?",
+          resposta: "Verde",
+          opcoes: ["Azul", "Verde", "Amarelo", "Vermelho"]
+        };
+
+        proximaPergunta = novaPosicao;
+        textoPergunta.textContent = perguntaObj.pergunta;
+        opcoesContainer.innerHTML = "";
+
+        perguntaObj.opcoes.forEach(opcao => {
+          const btn = document.createElement("button");
+          btn.className = "opcao";
+          btn.textContent = opcao;
+          btn.onclick = () => verificarResposta(opcao, perguntaObj.resposta);
+          opcoesContainer.appendChild(btn);
+        });
+
+        modal.style.display = "flex";
+      } else {
+        alert("🏁 Você chegou ao final do tabuleiro!");
+      }
+    }
+
+    function verificarResposta(resposta, correta) {
+      modal.style.display = "none";
+      if (resposta.toLowerCase() === correta.toLowerCase()) {
+        posicaoAtual = proximaPergunta;
+        acertos++;
+      } else {
+        posicaoAtual = Math.max(0, posicaoAtual - 1);
+        erros++;
+      }
+      atualizarSapo();
+      atualizarPontuacao();
+    }
+
+    atualizarSapo();
+    atualizarPontuacao();
+
+  </script>
+</body>
+
+</html>
